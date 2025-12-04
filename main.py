@@ -57,8 +57,37 @@ if not price:
         price = offscreen.get_text(strip=True).split()[0] if offscreen.get_text(strip=True) else None
 
     return title, price
-print("✓ parse_price_and_title() defined")
 
+
+def parse_price_and_title(html: str) -> tuple[str | None, str | None]:
+    soup = BeautifulSoup(html, "html.parser")
+    title_tag = soup.find(id="productTitle")
+    title = title_tag.get_text(strip=True) if title_tag else None
+
+    price = None
+    for pid in ["priceblock_ourprice", "priceblock_dealprice", "priceblock_saleprice",
+                "corePriceDisplay_desktop_feature_div"]:
+        tag = soup.find(id=pid)
+        if tag and tag.get_text(strip=True):
+            price = tag.get_text(strip=True).split()[0]
+            break
+
+    if not price:
+        offscreen = soup.find("span", class_="a-offscreen")
+        if offscreen:
+            price = offscreen.get_text(strip=True).split()[0] if offscreen.get_text(strip=True) else None
+
+    return title, price
+
+def extract_price_value(price_str: str) -> float | None:
+    """Convert price string to float"""
+    if not price_str:
+        return None
+    try:
+        cleaned = price_str.replace("$", "").replace(",", "").strip()
+        return float(cleaned)
+    except ValueError:
+        return None
 
 
 
