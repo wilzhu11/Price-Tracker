@@ -24,6 +24,39 @@ def get_page_html(url: str) -> str:
     return response.text
 
 
+def parse_price_and_title(html: str) -> tuple[str | None, str | None]:
+    soup = BeautifulSoup(html, "html.parser")
+    title_tag = soup.find(id="productTitle")
+    title = title_tag.get_text(strip=True) if title_tag else None
+
+    price = None
+    offscreen = soup.find("span", class_="a-offscreen")
+    if offscreen:
+        price_text = offscreen.get_text(strip=True)
+        # Extract just the price (e.g., "$1,234.99")
+        if price_text and price_text[0] == '$':
+            price = price_text.split()[0]
+
+    if not price:
+        for pid in ["priceblock_ourprice", "priceblock_dealprice", "priceblock_saleprice",
+                    "corePriceDisplay_desktop_feature_div"]:
+            tag = soup.find(id=pid)
+            if tag and tag.get_text(strip=True):
+                price = tag.get_text(strip=True).split()[0]
+                break
+
+    return title, price
+
+def extract_price_value(price_str: str) -> float | None:
+    if not price_str:
+        return None
+    try:
+        cleaned = price_str.replace("$", "").replace(",", "").strip()
+        return float(cleaned)
+    except ValueError:
+        return None
+
+
 
 
 
