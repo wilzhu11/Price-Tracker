@@ -16,6 +16,6 @@ From_Name = os.getenv("FROM_NAME", "AMAZON")
 FROM_Password = os.getenv("FROM_PASSWORD", "gsqu mrca gmaa ysdf")
 To_Email = os.getenv("TO_EMAIL", "21wilson.zhu@gmail.com")
 
-
+def getpage_html(url: str) -> st
 
 
