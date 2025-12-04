@@ -13,8 +13,9 @@ TARGET_PRICE = 1200.00
 
 From_Email = os.getenv("FROM_EMAIL", "sherryliang38@gmail.com")
 From_Name = os.getenv("FROM_NAME", "AMAZON")
+FROM_Password = os.getenv("FROM_PASSWORD", "gsqu mrca gmaa ysdf")
+To_Email = os.getenv("TO_EMAIL", "21wilson.zhu@gmail.com")
 
-To_Email = os.getenv("TO_EMAIL", "")
 
 
 
