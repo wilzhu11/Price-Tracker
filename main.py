@@ -29,6 +29,7 @@ def get_page_html(url: str) -> str:
     response.raise_for_status()
     return response.text
 
-
+def parse_price_and_title(html: str) -> tuple[str,None, str, None]:
+    soup = BeautifulSoup(html, "html.parser")
 
 
