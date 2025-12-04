@@ -33,13 +33,38 @@ def parse_price_and_title(html: str) -> tuple[str,None, str, None]:
     soup = BeautifulSoup(html, "html.parser")
     title_tag = soup.find(id="productTitle")
     title = title_tag.get_text(strip=True) if title_tag else None
-    price = None
-    price_ids = [
-        "priceblock_outprice",
-        "priceblock_dealprice",
-        "priceblock_salesprice",
-        "corePriceDisplay_desktop_feature_div",
-    ]
+
+    for pid in price_ids:
+        tag = soup.find(id=pid)
+        if tag:
+            price_text = tag.get_text(strip=True)
+            if price_text:
+                price = price_text.split()[0]
+                break
+
+
+price = None
+for pid in ["priceblock_ourprice", "priceblock_dealprice", "priceblock_saleprice",
+            "corePriceDisplay_desktop_feature_div"]:
+    tag = soup.find(id=pid)
+    if tag and tag.get_text(strip=True):
+        price = tag.get_text(strip=True).split()[0]
+        break
+
+if not price:
+    offscreen = soup.find("span", class_="a-offscreen")
+    if offscreen:
+        price = offscreen.get_text(strip=True).split()[0] if offscreen.get_text(strip=True) else None
+
+    return title, price
+print("✓ parse_price_and_title() defined")
+
+
+
+
+
+
+
 
 
 
