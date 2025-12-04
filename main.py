@@ -56,6 +56,30 @@ def extract_price_value(price_str: str) -> float | None:
     except ValueError:
         return None
 
+def append_to_csv(timestamp: str, title: str | None, price: str | None, url: str, filename: str = "price_history.csv") -> None:
+    path = Path(filename)
+    file_exists = path.is_file()
+    with path.open("a", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        if not file_exists:
+            writer.writerow(["timestamp", "title", "price", "url"])
+        writer.writerow([timestamp, title or "", price or "", url])
+
+def send_email(subject: str, body: str) -> None:
+    try:
+        msg = MIMEMultipart()
+        msg["From"] = FROM_EMAIL
+        msg["To"] = TO_EMAIL
+        msg["Subject"] = subject
+        msg.attach(MIMEText(body, "plain"))
+        server = SMTP_SSL("smtp.gmail.com", 465)
+        server.login(FROM_EMAIL, FROM_PASSWORD)
+        server.send_message(msg)
+        server.quit()
+        print("✓ Email sent successfully!")
+    except Exception as e:
+        print(f"✗ Email error: {e}")
+
 
 
 
