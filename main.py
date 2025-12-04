@@ -89,6 +89,8 @@ def extract_price_value(price_str: str) -> float | None:
     except ValueError:
         return None
 
+def apend
+
 
 
 
