@@ -31,5 +31,15 @@ def get_page_html(url: str) -> str:
 
 def parse_price_and_title(html: str) -> tuple[str,None, str, None]:
     soup = BeautifulSoup(html, "html.parser")
+    title_tag = soup.find(id="productTitle")
+    title = title_tag.get_text(strip=True) if title_tag else None
+    price = None
+    price_ids = [
+        "priceblock_outprice",
+        "priceblock_dealprice",
+        "priceblock_salesprice",
+        "corePriceDisplay_desktop_feature_div",
+    ]
+
 
 
