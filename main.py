@@ -10,7 +10,6 @@ import os
 
 Product_URL = "https://www.amazon.com/Apple-Version-Orange-Unlocked-Renewed/dp/B0FTC2PRVZ/ref=mp_s_a_1_3?crid=12DU2W23NGUG6&dib=eyJ2IjoiMSJ9.GyiR0GcyN_tVX_yq3UHqDHSsfvKHHipt_aXtlfqAbuLAIApqsYWEOJrlXC8YgKT2U2oflmiHUMRRBM13CnJCq1jPBl8eHdakCgv4UFERp6RQlZk0x9cm4bp0MLfPcTHLNK1RAtVT67uM_W05Ttdfm5DL5YXmpHlBLsAhQCJ5MgWQRC9posVq_wNTSSqiMQBEOyrZbiTAp7lV-FsHRd1Xgw.mYf6M63S7Hoq-FcR-xtNBYOJdv5j-1s71GnP9vAZn7o&dib_tag=se&keywords=iphone%2B17%2Bpro%2Bmax&qid=1764770796&sprefix=Iphone%2B1%2Caps%2C190&sr=8-3&th=1"
 From_Email = os.getenv("FROM_EMAIL", "sherryliang38@gmail.com")
-From_Name = os.getenv("FROM_NAME", "AMAZON")
 FROM_Password = os.getenv("FROM_PASSWORD", "gsqu mrca gmaa ysdf")
 To_Email = os.getenv("TO_EMAIL", "21wilson.zhu@gmail.com")
 
@@ -80,6 +79,29 @@ def send_email(subject: str, body: str) -> None:
     except Exception as e:
         print(f"✗ Email error: {e}")
 
+
+def track_product(url: str) -> None:
+    """Track product price and log data"""
+    try:
+        html = get_page_html(url)
+        title, price = parse_price_and_title(html)
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        print("===================================")
+        print(f"Checked at: {timestamp}")
+        print(f"Product Name: {title if title else 'could not be found'}")
+        print(f"Price: {price if price else 'could not be found'}")
+        print("===================================")
+
+        append_to_csv(timestamp, title, price, url)
+    except Exception as e:
+        print(f"Error: {e}")
+
+def main():
+    track_product(Product_URL)
+
+if __name__ == "__main__":
+    main()
 
 
 
