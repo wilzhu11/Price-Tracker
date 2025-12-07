@@ -9,13 +9,13 @@ from email.mime.multipart import MIMEMultipart
 import os
 
 Product_URL = "https://www.amazon.com/Apple-Version-Orange-Unlocked-Renewed/dp/B0FTC2PRVZ/ref=mp_s_a_1_3?crid=12DU2W23NGUG6&dib=eyJ2IjoiMSJ9.GyiR0GcyN_tVX_yq3UHqDHSsfvKHHipt_aXtlfqAbuLAIApqsYWEOJrlXC8YgKT2U2oflmiHUMRRBM13CnJCq1jPBl8eHdakCgv4UFERp6RQlZk0x9cm4bp0MLfPcTHLNK1RAtVT67uM_W05Ttdfm5DL5YXmpHlBLsAhQCJ5MgWQRC9posVq_wNTSSqiMQBEOyrZbiTAp7lV-FsHRd1Xgw.mYf6M63S7Hoq-FcR-xtNBYOJdv5j-1s71GnP9vAZn7o&dib_tag=se&keywords=iphone%2B17%2Bpro%2Bmax&qid=1764770796&sprefix=Iphone%2B1%2Caps%2C190&sr=8-3&th=1"
-TAREGT_PRICE = 1100
-PRICE_HISTORY_FILE = "PriceHistory.csv"
+TARGET_PRICE = 1100
+Price_History_File= "PriceHistory.csv"
 
-From_Email = os.getenv("FROM_EMAIL", "sherryliang38@gmail.com")
-FROM_NAME = os.getenv("FROM_NAME", "Amazon")
-FROM_Password = os.getenv("FROM_PASSWORD", "gsqu mrca gmaa ysdf")
-To_Email = os.getenv("TO_EMAIL", "21wilson.zhu@gmail.com")
+FROM_EMAIL = os.getenv("FROM_EMAIL", "sherryliang38@gmail.com")
+From_Name = os.getenv("FROM_NAME", "Amazon")
+FROM_PASSWORD = os.getenv("FROM_PASSWORD", "gsqu mrca gmaa ysdf")
+TO_EMAIL = os.getenv("TO_EMAIL", "21wilson.zhu@gmail.com")
 
 def get_page_html(url: str) -> str:
     headers = {
@@ -73,7 +73,7 @@ def send_email(subject: str, body: str) -> None:
         msg["To"] = TO_EMAIL
         msg["Subject"] = subject
         msg.attach(MIMEText(body, "plain"))
-        server = SMTP_SSL("smtp.gmail.com", 465)
+        server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         server.login(FROM_EMAIL, FROM_PASSWORD)
         server.send_message(msg)
         server.quit()
@@ -100,38 +100,44 @@ def track_product(url: str) -> None:
         print(f"Price: {price if price else 'could not be found'}")
         print("===================================")
 
-        if title:
-            print(f"Title: {title}")
-        else:
-            print("Title: could not be found")
+        append_to_csv(timestamp, title, price, url, Price_History_File)
 
-        if price:
-            print(f"Price: {price}")
-        else:
-            print("Price: could not be found")
-        print("===================================")
-
-        append_to_csv(timestamp, title, price, url)
-
-    if title and price:
-        price_value = extract_price_value(price)
+        if title and price:
+            price_value = extract_price_value(price)
 
         email_subject = f"Price Update: {title}"
-        email_body = f"Product: {title}\nPrice: {price}\nTarget Price: ${TARGET_PRICE}\nChecked at: {timestamp}\nURL: {url}"
+        email_body = (
+            f"Product: {title}\n"
+            f"Price: {price}\n"
+            f"Target Price: ${TARGET_PRICE}\n"
+            f"Checked at: {timestamp}\n"
+            f"URL: {url}"
+        )
 
-        if price_value and price_value <= TARGET_PRICE:
+        if price_value is not None and price_value <= TARGET_PRICE:
             email_subject = f"🎯 PRICE ALERT: {title} - PRICE HIT TARGET!"
-            email_body = f"🎉 Great news! The price has dropped to your target!\n\nProduct: {title}\nCurrent Price: {price}\nTarget Price: ${TARGET_PRICE}\nSavings: ${TARGET_PRICE - price_value:.2f}\n\nChecked at: {timestamp}\nURL: {url}"
-            print(f"\n🎯 PRICE ALERT! Current price ({price}) is at or below target (${TARGET_PRICE})!\n")
+            email_body = (
+            "🎉 Great news! The price has dropped to your target!\n\n"
+            f"Product: {title}\n"
+            f"Current Price: {price}\n"
+            f"Target Price: ${TARGET_PRICE}\n"
+            f"Savings: ${TARGET_PRICE - price_value:.2f}\n\n"
+            f"Checked at: {timestamp}\n"
+            f"URL: {url}"
+            )
+            print(
+                f"\n🎯 PRICE ALERT! Current price ({price}) "
+                f"is at or below target (${TARGET_PRICE})!\n"
+            )
 
         send_email(email_subject, email_body)
 
-except requests.HTTPError as e:
-    print(f"HTTP error: {e}")
-except requests.RequestException as e:
-print(f"Network error: {e}")
-except Exception as e:
-print(f"Unexpected error: {e}")
+    except requests.HTTPError as e:
+        print(f"HTTP error: {e}")
+    except requests.RequestException as e:
+        print(f"Network error: {e}")
+    except Exception as e:
+        print(f"Unexpected error: {e}")
 
 
 def main():
