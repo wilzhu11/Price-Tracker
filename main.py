@@ -102,6 +102,7 @@ def track_product(url: str) -> None:
 
         append_to_csv(timestamp, title, price, url, Price_History_File)
 
+        Price_value = None
         if title and price:
             price_value = extract_price_value(price)
 
