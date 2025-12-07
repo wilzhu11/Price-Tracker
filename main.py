@@ -115,7 +115,7 @@ def track_product(url: str) -> None:
         )
 
         if price_value is not None and price_value <= TARGET_PRICE:
-            email_subject = f"🎯 PRICE ALERT: {title} - PRICE HIT TARGET!"
+            email_subject = f"PRICE ALERT: {title} - PRICE HIT TARGET!"
             email_body = (
             "🎉 Great news! The price has dropped to your target!\n\n"
             f"Product: {title}\n"
@@ -126,7 +126,7 @@ def track_product(url: str) -> None:
             f"URL: {url}"
             )
             print(
-                f"\n🎯 PRICE ALERT! Current price ({price}) "
+                f"\n PRICE ALERT! Current price ({price}) "
                 f"is at or below target (${TARGET_PRICE})!\n"
             )
 
